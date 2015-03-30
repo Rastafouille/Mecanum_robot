@@ -2,6 +2,12 @@
 #include <LSM303.h>
 long timer=0;
 
+// Encoders
+int sensorcount10 = 0;int sensorcount11 = 0;long count1 = 0;
+int sensorcount20 = 0;int sensorcount21 = 0;long count2 = 0;
+int sensorcount30 = 0;int sensorcount31 = 0;long count3 = 0;
+int sensorcount40 = 0;int sensorcount41 = 0;long count4 = 0;
+
 //Front motors
 int M1S = 3; //M1 Speed Control
 int M2S = 11; //M2 Speed Control
@@ -30,13 +36,12 @@ float vitesse;
 void setup(void)
 	{
 	  int i;
-	  //for(i=3;i<=13;i++) {pinMode(i, OUTPUT);}
+	  for(i=3;i<=13;i++) {pinMode(i, OUTPUT);}
 	  Serial.begin(115200);
 	  Serial.println("Serial");
 	  Wire.begin();
 	  compass.init();
 	  compass.enableDefault();
-
 	}
 
 void loop(void)
@@ -46,10 +51,33 @@ void loop(void)
 //	  if(recupInfo(texte,&cons_vitesse,&cons_angle)==2) {Serial.println("Erreur de trame 2!");}
   
   RunForrestRun(200,200,-200,-200);
-  delay(1000);
-  //stop();
-  delay(1000);
-  EnvoieTrame(compass);
+  EnvoieTrame(compass,count4/16);
+  
+//  if (analogRead(A0) < 600){sensorcount11 = 1;}
+//  else {sensorcount11 = 0;}
+//  if (sensorcount11 != sensorcount10){count1 ++;}
+//  sensorcount10 = sensorcount11;
+//  Serial.println(count1/16);
+//  
+//    if (analogRead(A1) < 600){sensorcount21 = 1;}
+//  else {sensorcount21 = 0;}
+//  if (sensorcount21 != sensorcount20){count2 ++;}
+//  sensorcount20 = sensorcount21;
+//  Serial.println(count2/16);
+//  
+//    if (analogRead(A2) < 600){sensorcount31 = 1;}
+//  else {sensorcount31 = 0;}
+//  if (sensorcount31 != sensorcount30){count3 ++;}
+//  sensorcount30 = sensorcount31;
+//  Serial.println(count3/16);
+//  
+    if (analogRead(A3) < 600){sensorcount41 = 1;}
+  else {sensorcount41 = 0;}
+  if (sensorcount41 != sensorcount40){count4 ++;}
+  sensorcount40 = sensorcount41;
+  //Serial.println(count4/16);
+
+  delay(10);
   
 	}
 
@@ -101,7 +129,7 @@ int recupInfo(char *texte, long int *cons_vitesse,long int *cons_angle)
 	}
 }
 
-void EnvoieTrame(LSM303 compass)
+void EnvoieTrame(LSM303 compass,long count4)
   {
     compass.read();
     timer = millis();
@@ -120,6 +148,8 @@ void EnvoieTrame(LSM303 compass)
     Serial.print (compass.m.y);
     Serial.print (",");  
     Serial.print (compass.m.z);  
+    Serial.print (",");  
+    Serial.print (count4);  
 //    Serial.print(",");
 //    Serial.print (vleft);
 //    Serial.print (","); 
