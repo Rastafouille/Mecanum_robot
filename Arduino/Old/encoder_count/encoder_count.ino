@@ -10,7 +10,7 @@ long count = 0;
 
 void setup() {
   int i;
-  for(i=5;i<=8;i++)
+  for(i=3;i<=13;i++)
     pinMode(i, OUTPUT);
   Serial.begin(9600);
   int leftspeed = 255; //255 is maximum speed
@@ -18,21 +18,19 @@ void setup() {
 }
 
 void loop() {
-  analogWrite (10,255);
-  digitalWrite(12,LOW);
-  analogWrite (11,255);
-  digitalWrite(13,LOW);
+  analogWrite (6,50);
+  digitalWrite(8,LOW);
+  analogWrite (5,50);
+  digitalWrite(7,HIGH);
   delay(20);
-  rawsensorValue = analogRead(0);
-  if (rawsensorValue < 600){ //Min value is 400 and max value is 800, so state chance can be done at 600.
-    sensorcount1 = 1;
-  }
-  else {
-    sensorcount1 = 0;
-  }
-  if (sensorcount1 != sensorcount0){
-    count ++;
-  }
+  rawsensorValue = analogRead(A3);
+  //Serial.print ("A3=");Serial.print(analogRead(A3));Serial.print("  A1=");Serial.println(analogRead(A1));
+  //Min value is 400 and max value is 800, so state chance can be done at 600.
+  
+
+  if (analogRead(3) < 600){sensorcount1 = 1;}
+  else {sensorcount1 = 0;}
+  if (sensorcount1 != sensorcount0){count ++;}
   sensorcount0 = sensorcount1;
-  Serial.println(count);
+  Serial.println(count/16);
 }
