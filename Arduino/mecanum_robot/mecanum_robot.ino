@@ -29,7 +29,7 @@ LSM303 compass;
 // Buffer qui va contenir le texte (taille du buffer / 2, oui j'ai mis ça au pif)
 char texte[TAILLE_MAX];
 // Données utiles extraites
-long int cons_vitesse,cons_angle,angle;
+long int cons_button,cons_X,cons_Y,angle;
 float vitesse;
 
 
@@ -37,7 +37,7 @@ void setup(void)
 	{
 	  int i;
 	  for(i=3;i<=13;i++) {pinMode(i, OUTPUT);}
-	  Serial.begin(115200);
+	  Serial.begin(38400);
 	  Serial.println("Serial");
 	  Wire.begin();
 	  compass.init();
@@ -47,10 +47,11 @@ void setup(void)
 void loop(void)
 	{
 	  // Récupération d'une trame + parsing
-//	  if(recupInfo(texte,&cons_vitesse,&cons_angle)==1) {Serial.println("Erreur de trame 1!");}
-//	  if(recupInfo(texte,&cons_vitesse,&cons_angle)==2) {Serial.println("Erreur de trame 2!");}
+  if(recupInfo(texte,&cons_button,&cons_X,&cons_Y)==1) {Serial.println("Erreur de trame 1!");}
+  else if(recupInfo(texte,&cons_button,&cons_X,&cons_Y)==2) {Serial.println("Erreur de trame 2!");}
+  //else if(recupInfo(texte,&cons_vitesse,&cons_angle)==0) {Serial.print("Trame recue: ");Serial.println(texte);}
   
-  RunForrestRun(200,200,-200,-200);
+  RunForrestRun(cons_Y,cons_Y,cons_Y,cons_Y);
   EnvoieTrame(compass,count4/16);
   
 //  if (analogRead(A0) < 600){sensorcount11 = 1;}
@@ -77,7 +78,7 @@ void loop(void)
   sensorcount40 = sensorcount41;
   //Serial.println(count4/16);
 
-  delay(10);
+  delay(50);
   
 	}
 
@@ -102,7 +103,7 @@ void RunForrestRun(char V1,char V2,char V3,char V4)
 	  else if (V4>=0) {analogWrite (M4S,V4);digitalWrite(M4D,HIGH);}
 	}
 
-int recupInfo(char *texte, long int *cons_vitesse,long int *cons_angle) 
+int recupInfo(char *texte, long int *cons_button,long int *cons_X,long int *cons_Y) 
 	{
 	  char c, buf[TAILLE_MAX + 1];
 	  unsigned char i = 0;
@@ -122,8 +123,8 @@ int recupInfo(char *texte, long int *cons_vitesse,long int *cons_angle)
 	  while((texte[i] = buf[i]) != '#') i++;
 	  texte[i] = '\0';
 	  /* Parse la chaine de caractères et extrait les champs */
-	  if(sscanf(texte, "X;%d;%d;",cons_vitesse,cons_angle) != 2)
-	    {return 2;} /* Si sscanf n'as pas pu extraire les 2 champs -> erreur*/
+	  if(sscanf(texte, "X;%d;%d;%d;",cons_button,cons_X,cons_Y) != 2)
+	    {return 2;} /* Si sscanf n'as pas pu extraire les 3 champs -> erreur*/
   
 	  return 0;/* retourne 0 -> pas d'erreur */
 	}

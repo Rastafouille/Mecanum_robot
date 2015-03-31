@@ -4,6 +4,11 @@ Created on Sat Mar 28 21:21:57 2015
 
 @author: rastafouille
 """
+
+#sur le PC H@ri a chaque branchement de clé bluetooth "sudo hciconfig hci0 reset"
+
+
+
 import serial
 from math import sqrt
 import matplotlib.pyplot as plt
@@ -52,10 +57,9 @@ def main():
 
     Exit=False
     while Exit==False:
-        time.sleep(0.1)
-        if ComSerie==1:    
+        time.sleep(0.01)
+        if ComSerie==1:   
             line = ser.readline()
-            
             # reception trame Robot
             if line.startswith('!AN'):
                 line = line.replace("!AN:", "")
@@ -63,7 +67,7 @@ def main():
                 Robot.append(line.split(','))
                 print 'trame robot recue : ',Robot[j]
                 j=j+1
-                
+            #ser.flushInput()
         if ComWiimote==1:
             # lecture wiimote            
             wiimote.rpt_mode = cwiid.RPT_BTN | cwiid.RPT_ACC | cwiid.RPT_EXT
