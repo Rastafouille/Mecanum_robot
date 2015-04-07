@@ -1,6 +1,9 @@
 #include <Wire.h>
 #include <LSM303.h>
 long timer=0;
+int limit=15;
+int vmax=125;
+
 
 // Encoders
 int sensorcount10 = 0;int sensorcount11 = 0;long count1 = 0;
@@ -29,8 +32,9 @@ LSM303 compass;
 // Buffer qui va contenir le texte (taille du buffer / 2, oui j'ai mis ça au pif)
 char texte[TAILLE_MAX];
 // Données utiles extraites
-long int cons_button,cons_X,cons_Y,angle;
-float vitesse;
+long int cons_button=10,cons_X=0,cons_Y=0,angle=0;
+float vitesse=0;
+
 
 
 void setup(void)
@@ -51,8 +55,24 @@ void loop(void)
   else if(recupInfo(texte,&cons_button,&cons_X,&cons_Y)==2) {Serial.println("Erreur de trame 2!");}
   //else if(recupInfo(texte,&cons_vitesse,&cons_angle)==0) {Serial.print("Trame recue: ");Serial.println(texte);}
   
-  RunForrestRun(cons_Y,cons_Y,cons_Y,cons_Y);
-  EnvoieTrame(compass,count4/16);
+
+  if (cons_button==0){
+    angle=90*float (cons_X-128)/128;
+    vitesse=vmax*float (cons_Y-128)/128;
+    RunForrestRun(vitesse,vitesse,vitesse,vitesse);
+}
+  else if (cons_button==1){
+    vitesse=vmax*float (cons_Y-128)/128;
+    RunForrestRun(vitesse,-vitesse,-vitesse,vitesse);
+  
+  }
+  else if (cons_button==2){
+      vitesse=vmax*float (cons_Y-128)/128;
+    RunForrestRun(-vitesse,vitesse,vitesse,-vitesse);
+  }
+
+  //cons_button=-1;
+  EnvoieTrame(compass,cons_button);
   
 //  if (analogRead(A0) < 600){sensorcount11 = 1;}
 //  else {sensorcount11 = 0;}
@@ -130,7 +150,8 @@ int recupInfo(char *texte, long int *cons_button,long int *cons_X,long int *cons
 	}
 }
 
-void EnvoieTrame(LSM303 compass,long count4)
+
+void EnvoieTrame(LSM303 compass,float count4)
   {
     compass.read();
     timer = millis();

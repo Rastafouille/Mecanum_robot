@@ -48,7 +48,7 @@ def main():
     
     try:
         #ser = serial.Serial(port='/dev/ttyUSB0', baudrate=9600, timeout=1) #connection Xbee
-        ser = serial.Serial(port='/dev/ttyUSB0', baudrate=38400, timeout=0.1) #connection filaire
+        ser = serial.Serial(port='/dev/ttyACM0', baudrate=38400, timeout=0.1) #connection filaire
         ComSerie =1
         print 'Serial communication done !!'
     except :
@@ -60,6 +60,7 @@ def main():
         time.sleep(0.01)
         if ComSerie==1:   
             line = ser.readline()
+            print (line)
             # reception trame Robot
             if line.startswith('!AN'):
                 line = line.replace("!AN:", "")
@@ -67,19 +68,18 @@ def main():
                 Robot.append(line.split(','))
                 print 'trame robot recue : ',Robot[j]
                 j=j+1
-            #ser.flushInput()
         if ComWiimote==1:
             # lecture wiimote            
             wiimote.rpt_mode = cwiid.RPT_BTN | cwiid.RPT_ACC | cwiid.RPT_EXT
             WiiState=wiimote.state
-            print 'Wii State =',WiiState
+            #print 'Wii State =',WiiState
             print 'Nunchuck',wiimote.state['nunchuk']['buttons'],wiimote.state['nunchuk']['stick'][0],wiimote.state['nunchuk']['stick'][1]  
             
             
 #           vitesse.append(int((( float(commander[i][1]) -128) /102+1)*100))
 #           angle.append(int((((float(commander[i][2])-128)/102)*90+90)*100))
             #construction et envoie trame consigne            
-            if ComSerie==1:                
+            if ComSerie==1:    
                 consigne="~X;"+str(wiimote.state['nunchuk']['buttons'])+";"+str(wiimote.state['nunchuk']['stick'][0])+";"+str(wiimote.state['nunchuk']['stick'][1])+";#"
                 ser.write(consigne)
                 print 'trame consigne envoyée : ',consigne
